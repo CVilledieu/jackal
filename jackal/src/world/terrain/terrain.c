@@ -4,9 +4,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define RPATH "assets\\objects\\"
-
-
 static int32_t FloorDiv(int32_t value, int32_t divisor) {
     int32_t quotient = value / divisor;
     int32_t remainder = value % divisor;
@@ -93,4 +90,6 @@ Terrain_t* NewTerrain(uint16_t width, uint16_t length, uint32_t cap){
 
 Chunk_t* NewChunk(void){
     Chunk_t* new = calloc(1, sizeof(Chunk_t));
+
+    return new;
 }
