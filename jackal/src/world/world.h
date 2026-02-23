@@ -12,7 +12,7 @@ typedef struct MapPage_t MapPage_t;
 
 
 typedef struct World_t{
-    MapKey_t* mapKeys;
+    MapKey_t** mapKeys;
     uint32_t mapCount;
 
     Terrain_t* currentMap;
