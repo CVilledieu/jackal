@@ -1,7 +1,4 @@
-#ifndef __DRAW_H__
-#define __DRAW_H__
-
+#pragma once
 
 void DrawBuffer(void);
 
-#endif

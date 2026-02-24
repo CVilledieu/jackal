@@ -1,5 +1,4 @@
-#ifndef __TYPES_H__
-#define __TYPES_H__
+#pragma once
 
 #include <stdint.h>
 
@@ -49,6 +48,3 @@ typedef struct Vertex_t {
 } Vertex_t;
 
 #define VERTEX_STRIDE sizeof(Vertex_t)
-
-
-#endif

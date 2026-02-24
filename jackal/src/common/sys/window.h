@@ -1,5 +1,4 @@
-#ifndef __WINDOW_H__
-#define __WINDOW_H__
+#pragma once
 
 #include "glad/glad.h"
 #include <glfw/glfw3.h>
@@ -11,5 +10,3 @@ static inline void ClearBuffer(void){
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
-
-#endif

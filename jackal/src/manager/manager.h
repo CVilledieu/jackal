@@ -1,5 +1,4 @@
-#ifndef __MANAGER_H__
-#define __MANAGER_H__
+#pragma once
 
 #include "types.h"
 #include <stdint.h>
@@ -16,6 +15,3 @@ typedef struct EntityManifest_t{
 typedef struct Manager_t{
 
 } Manager_t;
-
-
-#endif

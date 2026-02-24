@@ -1,5 +1,4 @@
-#ifndef __JACKAL_PARSING_H__
-#define __JACKAL_PARSING_H__
+#pragma once
 
 #include <stdint.h>
 #include <string.h>
@@ -48,6 +47,3 @@ static inline uint32_t ParseHeader(uint8_t** src, size_t* size){
 
     return nKeys;
 }
-
-
-#endif

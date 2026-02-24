@@ -1,5 +1,4 @@
-#ifndef __MESH_H__
-#define __MESH_H__
+#pragma once
 
 #include "types.h"
 
@@ -39,5 +38,3 @@ void     BindMesh(const MeshRegistry_t* reg, MeshId id);
 
 // Free all GPU resources owned by the registry
 void     DestroyMeshRegistry(MeshRegistry_t* reg);
-
-#endif

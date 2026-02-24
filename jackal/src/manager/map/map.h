@@ -1,5 +1,4 @@
-#ifndef __TERRAIN_H__
-#define __TERRAIN_H__
+#pragma once
 
 #include <stdint.h>
 #include <stddef.h>
@@ -58,6 +57,3 @@ TerrainLocalCoord_t CellToLocalCoord(CellCoord_t cell);
 size_t LocalToLinearIndex(TerrainLocalCoord_t local);
 
 Map_t* NewMap(uint16_t width, uint16_t length);
-
-
-#endif

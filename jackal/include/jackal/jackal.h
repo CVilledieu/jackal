@@ -1,5 +1,4 @@
-#ifndef __JACKAL_PUP_ENGINE_H__
-#define __JACKAL_PUP_ENGINE_H__
+#pragma once
 
 typedef struct GLFWwindow GLFWwindow;
 
@@ -8,4 +7,3 @@ typedef struct JPupEngine_t{
 } JPupEngine_t;
 
 
-#endif

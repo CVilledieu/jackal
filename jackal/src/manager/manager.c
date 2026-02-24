@@ -1,5 +1,5 @@
 #include "manager.h"
-#include "manifests/mapdata.h"
+#include "manifests/map_manifest.h"
 #include <stdlib.h>
 #include <string.h>
 
