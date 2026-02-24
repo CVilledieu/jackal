@@ -1,4 +1,4 @@
-#include "terrain.h"
+#include "map.h"
 #include "types.h"
 #include <math.h>
 #include <stdlib.h>
@@ -64,13 +64,13 @@ static inline size_t AreaCheck(uint16_t width, uint16_t length){
     return (size_t)width * (size_t)length;
 }
 
-Terrain_t* NewTerrain(uint16_t width, uint16_t length, uint32_t cap){
+Map_t* NewMap(uint16_t width, uint16_t length){
     size_t area = AreaCheck(width, length);
     if (!area){
         return NULL;
     }
 
-    Terrain_t* map = malloc(sizeof(Terrain_t));
+    Map_t* map = malloc(sizeof(Map_t));
     if (!map) {
         return NULL;
     }
@@ -79,7 +79,7 @@ Terrain_t* NewTerrain(uint16_t width, uint16_t length, uint32_t cap){
     map->mapWidth = width;
     map->mapHeight = CHUNK_HEIGHT;
     map->chunkCount = 0;
-    map->chunkCap = cap;
+    map->chunkCap = 0;
     map->chunkList = NULL;
     map->modelCount = 0;
     map->modelBuffer = NULL;

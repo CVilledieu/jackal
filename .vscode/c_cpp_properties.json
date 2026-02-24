@@ -4,6 +4,7 @@
             "includePath": [
                 "${workspaceFolder}/jackal/include/**",
                 "${workspaceFolder}/jackal/src/*",
+                "${workspaceFolder}/jackal/src/*/*",
                 "${workspaceFolder}/jackal/src/common/**",
             ],
             "intelliSenseMode": "windows-msvc-x64",

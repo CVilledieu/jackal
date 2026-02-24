@@ -38,7 +38,7 @@ typedef struct Chunk_t {
     ChunkCoord_t coord;
 } Chunk_t;
 
-typedef struct Terrain_t {
+typedef struct Map_t {
     uint16_t mapWidth;
     uint16_t mapLength;
     uint16_t mapHeight;
@@ -50,14 +50,14 @@ typedef struct Terrain_t {
     // Render data
     float*   modelBuffer;
     uint32_t modelCount;
-}Terrain_t;
+}Map_t;
 
 CellCoord_t WorldToCell(float x, float y, float z, float cellSize);
 ChunkCoord_t CellToChunkCoord(CellCoord_t cell);
 TerrainLocalCoord_t CellToLocalCoord(CellCoord_t cell);
 size_t LocalToLinearIndex(TerrainLocalCoord_t local);
 
-Terrain_t* NewTerrain(uint16_t width, uint16_t length, uint32_t cap);
+Map_t* NewMap(uint16_t width, uint16_t length);
 
 
 #endif
