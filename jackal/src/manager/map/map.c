@@ -65,12 +65,7 @@ static inline size_t AreaCheck(uint16_t width, uint16_t length){
     return (size_t)width * (size_t)length;
 }
 
-Chunk_t* CreateNewChunk(int32_t x, int32_t z){
-    Chunk_t* newChunk = malloc(sizeof(Chunk_t));
-    newChunk->coord.x = x;
-    newChunk->coord.z = z;
-    return newChunk;
-}
+
 
 Map_t* CreateNewMap(MapRecord_t* record){
     size_t area = AreaCheck(record->width, record->length);

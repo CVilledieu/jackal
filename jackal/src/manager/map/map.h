@@ -57,6 +57,4 @@ ChunkCoord_t CellToChunkCoord(CellCoord_t cell);
 TerrainLocalCoord_t CellToLocalCoord(CellCoord_t cell);
 size_t LocalToLinearIndex(TerrainLocalCoord_t local);
 
-
-Chunk_t* CreateNewChunk(int32_t x, int32_t z);
 Map_t* CreateNewMap(MapRecord_t* record);
