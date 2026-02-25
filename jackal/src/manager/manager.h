@@ -8,10 +8,11 @@
 
 
 
-typedef struct EntityManifest_t{
-    uint32_t length;
-} EntityManifest_t;
-
 typedef struct Manager_t{
-
+    Map_t* currentMap;
+    Entities_t* currentEntities;
 } Manager_t;
+
+
+
+Manager_t* CreateManagement(void);

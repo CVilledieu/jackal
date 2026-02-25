@@ -10,13 +10,13 @@ char appRoot[MAX_PATH_LENGTH];
 int pathLength = 0;
 
 // Caller is responsible for freeing memory
-uint32_t GetFileData(uint8_t** dest, const char* rPath, const char* fName){
+uint32_t GetFileData(uint8_t** dest, const char* destDir, const char* fName){
     if (dest == NULL || fName == NULL) {
         return 0;
     }
 
     char fullPath[MAX_PATH_LENGTH];
-    snprintf(fullPath, MAX_PATH_LENGTH, "%s%s%s", appRoot, rPath, fName);
+    snprintf(fullPath, MAX_PATH_LENGTH, "%s%s%s", appRoot, destDir, fName);
     
     FILE* fp = fopen(fullPath, "rb");
     if(fp == NULL){
@@ -40,6 +40,13 @@ uint32_t GetFileData(uint8_t** dest, const char* rPath, const char* fName){
     return size;
 }
 
+
+FILE* StreamFileData(const char* destDir, const char* fileName){
+    char absPath[MAX_PATH_LENGTH];
+    snprintf(absPath, MAX_PATH_LENGTH, "%s%s%s", appRoot, destDir, fileName);
+    FILE* fp = fopen(absPath, "rb");
+    return fp;
+}
 
 
 void GetPathData(void){

@@ -1,5 +1,6 @@
 #include "map.h"
 #include "types.h"
+#include "map_manifest.h"
 #include <math.h>
 #include <stdlib.h>
 #include <string.h>
@@ -64,8 +65,15 @@ static inline size_t AreaCheck(uint16_t width, uint16_t length){
     return (size_t)width * (size_t)length;
 }
 
-Map_t* NewMap(uint16_t width, uint16_t length){
-    size_t area = AreaCheck(width, length);
+Chunk_t* CreateNewChunk(int32_t x, int32_t z){
+    Chunk_t* newChunk = malloc(sizeof(Chunk_t));
+    newChunk->coord.x = x;
+    newChunk->coord.z = z;
+    return newChunk;
+}
+
+Map_t* CreateNewMap(MapRecord_t* record){
+    size_t area = AreaCheck(record->width, record->length);
     if (!area){
         return NULL;
     }
@@ -74,13 +82,15 @@ Map_t* NewMap(uint16_t width, uint16_t length){
     if (!map) {
         return NULL;
     }
-
-    map->mapLength = length;
-    map->mapWidth = width;
+    map->id = record->id;
+    map->mapLength = record->length;
+    map->mapWidth = record->width;
     map->mapHeight = CHUNK_HEIGHT;
+
     map->chunkCount = 0;
     map->chunkCap = 0;
     map->chunkList = NULL;
+
     map->modelCount = 0;
     map->modelBuffer = NULL;
 
@@ -88,8 +98,3 @@ Map_t* NewMap(uint16_t width, uint16_t length){
 }
 
 
-Chunk_t* NewChunk(void){
-    Chunk_t* new = calloc(1, sizeof(Chunk_t));
-
-    return new;
-}

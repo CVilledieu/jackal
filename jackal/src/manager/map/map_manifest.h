@@ -1,9 +1,10 @@
 #pragma once
 
 #include <stdint.h>
+typedef struct Map_t Map_t;
 
-#define MAP_RECORD_SIZE 16
-#define MAP_FNAME "map_records.jkp"
+
+#define MAP_RECORD_SIZE 64
 
 
 
@@ -22,6 +23,8 @@ typedef struct MapManifest_t{
     uint32_t length;
 } MapManifest_t;
 
+uint8_t GetMapManifest(void);
 
+Map_t* CreateNewMap(MapRecord_t* record);
 
-
+void FreeMapManifest(void);
