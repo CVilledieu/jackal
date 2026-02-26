@@ -4,10 +4,13 @@
 #include "render.h"
 
 
+
+
 Jackal_t* InitJackalEngine(char* title){
     Jackal_t* jEngine = malloc(sizeof(Jackal_t));
     jEngine->mainWindow = CreateWindow(title);
 
+    jEngine->manager = InitManagement();
 
     return jEngine;
 }
@@ -22,7 +25,7 @@ void Run(Jackal_t* jEngine){
         
 
 
-        Render();
+        Render(jEngine->manager);
         glfwSwapBuffers(jEngine->mainWindow);
     }
 
