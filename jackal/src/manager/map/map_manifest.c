@@ -49,7 +49,7 @@ static inline uint8_t ParseMapRecord(MapRecord_t* record, uint8_t** src, size_t*
 
 
 
-uint8_t GetMapManifest(void){
+uint8_t InitMapManifest(void){
     uint8_t* buffPtr;
     size_t srcSize = GetFileData(&buffPtr, MANIFEST_DIR_PATH, MANIFEST_FILE);
     if (srcSize < HEADER_SIZE){
@@ -76,15 +76,27 @@ uint8_t GetMapManifest(void){
     return 0;
 }
 
-static inline uint8_t ParseBlockData(uint16_t* dest, uint8_t* src, size_t* srcSize){
-    if (*srcSize < (CHUNK_AREA * sizeof(uint16_t))){
+
+static inline uint8_t ParseChunkData(Chunk_t* chunk, uint8_t* src, size_t* srcSize){
+    const size_t chunkSize = (CHUNK_AREA * sizeof(uint16_t)) + sizeof(chunk->coord);
+     
+    if (*srcSize < chunkSize){
         return 1;
     }
+    ReadLEField(&chunk->coord.x, sizeof(chunk->coord.x), &src, srcSize);
+    ReadLEField(&chunk->coord.z, sizeof(chunk->coord.z), &src, srcSize);
     for(int i = 0; i < CHUNK_AREA; i++){
-        if(ReadLEField(&dest[i], sizeof(dest[i]), &src, srcSize)){
+        if(ReadLEField(&chunk->blockIds[i], sizeof(chunk->blockIds[i]), &src, srcSize)){
             return 1;
         }
     }
+    
+    for(int i = 0; i < CHUNK_AREA; i++){
+        if(ReadLEField(&chunk->blockIds[i], sizeof(chunk->blockIds[i]), &src, srcSize)){
+            return 1;
+        }
+    }
+    
     return 0;
 }
 
@@ -110,12 +122,12 @@ Map_t* LoadMapByIndex(uint32_t index){
 
     dest->chunkList = malloc(sizeof(Chunk_t) * tempChunkCount);
     for (int i = 0; i < tempChunkCount; i++){
-        Chunk_t* newChunk = &dest->chunkList[i];
-        ReadLEField(&newChunk->coord.x, sizeof(newChunk->coord.x), &src, srcSize);
-        ReadLEField(&newChunk->coord.z, sizeof(newChunk->coord.z), &src, srcSize);
-        ParseBlockData(newChunk->blockIds, src, srcSize);
-        ParseBlockData(newChunk->flags, src, srcSize);
+        if(ParseChunkData(&dest->chunkList[i], src, &srcSize)){
+            break;
+        }
+        dest->chunkCount++;
     }
+    return dest;
 }
 
 
