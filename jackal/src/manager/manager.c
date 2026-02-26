@@ -3,10 +3,10 @@
 #include "map/map.h"
 #include <stdint.h>
 
-/* State manager 
+/*  Manages engine internal game state
+   
 */
 
-#define ORIGIN_MAP_ID 0
 
 Manager_t* InitManagement(void){
     Manager_t* newManager = malloc(sizeof(Manager_t));
@@ -14,11 +14,17 @@ Manager_t* InitManagement(void){
         // Crit err: no map data
         return NULL;
     }
-
-    newManager->currentMap = LoadMapByIndex((uint32_t)ORIGIN_MAP_ID);
-
+    if(InitEntityManifest()){
+        /* Crit err: no entity data */
+        return NULL;
+    }
 
     return newManager;
 }
 
+
+void LoadOrigins(Manager_t* manager){
+    manager->currentMap = LoadMapByIndex(manager->originMap);
+    manager->currentEntities = LoadEntityList(manager->originEntity);
+}
 

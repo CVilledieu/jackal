@@ -15,9 +15,25 @@ Jackal_t* InitJackalEngine(char* title){
     return jEngine;
 }
 
+void SetOriginIDs(Jackal_t* jEngine, uint32_t mapId){
+    jEngine->manager->originMap = mapId;
+}
 
-// Scout should be lead the update, so changes can flow into director before rendering
+static inline void Prep(Jackal_t* jEngine){
+    LoadOrigins(jEngine->manager);
+}
+
+
+void ShutDown(Jackal_t* jEngine){
+    DestroyManagement(jEngine->manager);
+    DestroyRenderer(jEngine->renderer);
+    glfwDestroyWindow(jEngine->mainWindow);
+}
+
+
+
 void Run(Jackal_t* jEngine){
+    Prep(jEngine);
     while(!glfwWindowShouldClose(jEngine->mainWindow)){
         ClearBuffer();
         glfwPollEvents();
@@ -30,11 +46,4 @@ void Run(Jackal_t* jEngine){
     }
 
     ShutDown(jEngine);
-}
-
-
-void ShutDown(Jackal_t* jEngine){
-    DestroyManagement(jEngine->manager);
-    DestroyRenderer(jEngine->renderer);
-    glfwDestroyWindow(jEngine->mainWindow);
 }

@@ -23,7 +23,7 @@ typedef struct MapManifest_t{
     uint32_t length;
 } MapManifest_t;
 
-uint8_t InitMapManifest(void);
+uint8_t InitManifest_Map(void);
 
 
 Map_t* LoadMapByIndex(uint32_t index);

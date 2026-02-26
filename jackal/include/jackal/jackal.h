@@ -14,3 +14,4 @@ typedef struct Jackal_t{
 Jackal_t* InitJackalEngine(char* title);
 void Run(Jackal_t* jEngine);
 void ShutDown(Jackal_t* jEngine);
+void SetOriginIDs(Jackal_t* jEngine, uint32_t mapId);

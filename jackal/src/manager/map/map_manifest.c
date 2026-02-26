@@ -28,8 +28,8 @@ static inline uint8_t ParseMapRecord(MapRecord_t* record, uint8_t** src, size_t*
         {.fieldPtr = &record->nameLength, .length = sizeof(record->nameLength)},
         {.fieldPtr = &record->reserved, .length = sizeof(record->reserved)},
         {.fieldPtr = &record->fileName, .length = sizeof(record->fileName)},
-        
     };
+
     for (int i = 0; i < nPairs; i++){
         size_t fieldSize = field[i].length;
         if (fieldSize == 1 || fieldSize == 2 || fieldSize == 4 || fieldSize == 8){
@@ -49,7 +49,7 @@ static inline uint8_t ParseMapRecord(MapRecord_t* record, uint8_t** src, size_t*
 
 
 
-uint8_t InitMapManifest(void){
+uint8_t InitManifest_Map(void){
     uint8_t* buffPtr;
     size_t srcSize = GetFileData(&buffPtr, MANIFEST_DIR_PATH, MANIFEST_FILE);
     if (srcSize < HEADER_SIZE){
@@ -129,6 +129,8 @@ Map_t* LoadMapByIndex(uint32_t index){
     }
     return dest;
 }
+
+Map_t* LoadMapBy
 
 
 void FreeMapManifest(void){
