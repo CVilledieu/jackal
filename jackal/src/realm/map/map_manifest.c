@@ -130,9 +130,29 @@ Map_t* LoadMapByIndex(uint32_t index){
     return dest;
 }
 
-Map_t* LoadMapBy
+Map_t* LoadMapById(MapManifest_t* manifest, uint32_t id){
+    if (manifest->length < id){
+        return NULL;
+    }
+    uint32_t left = 0;
+    uint32_t right = manifest->length;
+    uint32_t piv = 0;
+    while(left < right){
+        if (manifest->table[piv].id == id){
+            break;
+        }
+        if (manifest->table[piv].id < id){
+            left = piv + 1;
+        } else {
+            right = piv - 1;
+        }
+        piv = left + ((right - left) / 2);
+    }
+
+    return LoadMapByIndex(piv);
+}
 
 
-void FreeMapManifest(void){
-    free(mapManifest);
+void DestroyMapManifest(MapManifest_t* manifest){
+    free(manifest);
 }

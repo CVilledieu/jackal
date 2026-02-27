@@ -27,5 +27,6 @@ uint8_t InitManifest_Map(void);
 
 
 Map_t* LoadMapByIndex(uint32_t index);
+Map_t* LoadMapById(MapManifest_t* manifest, uint32_t id);
 
-void FreeMapManifest(void);
+void DestroyMapManifest(MapManifest_t* manifest);

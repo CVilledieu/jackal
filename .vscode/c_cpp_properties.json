@@ -6,6 +6,7 @@
                 "${workspaceFolder}/jackal/src/*",
                 "${workspaceFolder}/jackal/src/*/*",
                 "${workspaceFolder}/jackal/src/common/**",
+                "${workspaceFolder}/jackal/tests/*"
             ],
             "intelliSenseMode": "windows-msvc-x64",
             "cStandard": "c17",

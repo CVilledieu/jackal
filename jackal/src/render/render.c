@@ -1,5 +1,5 @@
 #include "render.h"
-#include "manager.h"
+#include "realm.h"
 #include "mesh/shaders.h"
 #include "mesh/mesh.h"
 
@@ -10,6 +10,8 @@ void CreateRenderer(void){
     
     renderer.shaderID =  CreateShader();
     renderer.ssboID = CreateSSBO();
+    renderer.meshs = CreateMeshList();
+    
 }
 
 

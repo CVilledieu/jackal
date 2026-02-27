@@ -12,7 +12,7 @@ typedef struct Entities_t Entities_t;
 typedef struct MapManifest_t MapManifest_t;
 typedef struct EntityManifest_t EntityManifest_t;
 
-typedef struct Manager_t{
+typedef struct Realm_t{
     uint32_t originMap;
     uint32_t originEntity;
 
@@ -22,9 +22,9 @@ typedef struct Manager_t{
     MapManifest_t* mapList;
     EntityManifest_t* entityList;
 
-} Manager_t;
+} Realm_t;
 
 
 
-Manager_t* InitManagement(void);
-void LoadOrigins(Manager_t* manager);
+Realm_t* NewRealm(void);
+void LoadOrigins(Realm_t* realm);

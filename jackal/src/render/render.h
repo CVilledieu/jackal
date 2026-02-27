@@ -9,5 +9,8 @@ typedef struct Renderer_t{
 
 }Renderer_t;
 
-void Render(Manager_t* manager);
+
+Renderer_t* CreateRenderer();
+
+void Render(Realm_t* realm);
 
