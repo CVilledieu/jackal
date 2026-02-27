@@ -1,5 +1,7 @@
 #pragma once
 
+#include <stdint.h>
+
 typedef struct GLFWwindow GLFWwindow;
 typedef struct Realm_t Realm_t;
 typedef struct Renderer_t Renderer_t;

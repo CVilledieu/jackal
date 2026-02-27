@@ -6,14 +6,15 @@
 
 Renderer_t renderer = {0};
 
-void CreateRenderer(void){
+Renderer_t* CreateRenderer(void){
     
     renderer.shaderID =  CreateShader();
     renderer.ssboID = CreateSSBO();
     renderer.meshs = CreateMeshList();
     
+    
+    return &renderer;
 }
-
 
 
 void RenderMap(Map_t* currentMap){
