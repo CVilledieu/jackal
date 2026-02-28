@@ -7,11 +7,8 @@
 Renderer_t renderer = {0};
 
 Renderer_t* CreateRenderer(void){
-    
     renderer.shaderID =  CreateShader();
-    renderer.ssboID = CreateSSBO();
-    renderer.meshs = CreateMeshList();
-    
+    InitRingBuffer(&renderer.ringBuffer);
     
     return &renderer;
 }
@@ -25,8 +22,12 @@ void RenderEntities(Entities_t* entities){
 
 }
 
-void Render(Manager_t* manager){
+void Render(Realm_t* realm){
+    FrameWriter_t fWriter = {.start = NULL, 0, 0};
 
 
+}
 
+void DestroyRenderer(void){
+    DestroyRingBuffer(&renderer.ringBuffer);
 }
