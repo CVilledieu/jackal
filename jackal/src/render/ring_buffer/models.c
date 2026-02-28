@@ -3,6 +3,24 @@
 #include <string.h>
 #include "writer.h"
 
+#define BUFFER_GL_MAP_OPTIONS (GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT) 
+#define TIMEOUT_VAL 1000000ULL
+
+
+
+static inline void FenceSync(BufferSlice_t* slice){
+	GLenum result = glClientWaitSync(slice->fence, GL_SYNC_FLUSH_COMMANDS_BIT, TIMEOUT_VAL);
+
+	while (result != GL_ALREADY_SIGNALED && result != GL_CONDITION_SATISFIED) { /*Fix*/
+		result = glClientWaitSync(slice->fence, GL_SYNC_FLUSH_COMMANDS_BIT, TIMEOUT_VAL);
+	}
+	
+	glDeleteSync(slice->fence);
+	slice->fence = 0;
+}
+
+
+
 
 int InitRingBuffer(RingBuffer_t* ring, size_t sliceSize){
 	if (!ring || sliceSize == 0) {
@@ -19,9 +37,9 @@ int InitRingBuffer(RingBuffer_t* ring, size_t sliceSize){
 
 	glGenBuffers(1, &ring->ssbo);
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, ring->ssbo);
-	glBufferStorage(GL_SHADER_STORAGE_BUFFER, (GLsizeiptr)(sliceSize * BUFFER_COUNT), NULL, GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT);
+	glBufferStorage(GL_SHADER_STORAGE_BUFFER, (GLsizeiptr)(sliceSize * BUFFER_COUNT), NULL, BUFFER_GL_MAP_OPTIONS);
 
-	ring->mapped = (uint8_t*)glMapBufferRange(GL_SHADER_STORAGE_BUFFER, 0, (GLsizeiptr)(sliceSize * BUFFER_COUNT), GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT);
+	ring->mapped = (uint8_t*)glMapBufferRange(GL_SHADER_STORAGE_BUFFER, 0, (GLsizeiptr)(sliceSize * BUFFER_COUNT), BUFFER_GL_MAP_OPTIONS);
 
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 
@@ -33,6 +51,10 @@ int InitRingBuffer(RingBuffer_t* ring, size_t sliceSize){
 
 	return 1;
 }
+
+
+
+
 
 void DestroyRingBuffer(RingBuffer_t* ring){
 	if (!ring) {
@@ -57,28 +79,18 @@ void DestroyRingBuffer(RingBuffer_t* ring){
 
 
 
+
 int GetBufferSlice(RingBuffer_t* ring, FrameWriter_t* writer){
-	if (!ring || !ring->mapped) {
+	if ((!ring || !ring->mapped) || (!ValidWriter(writer) || writer->writeSize > ring->sliceSize)){
 		return 0;
 	}
 
-	if (!ValidWriter(writer) || writer->writeSize > ring->sliceSize){
-		return 0;
-	}
 
 	uint32_t slice = ring->currentSlice;
 	BufferSlice_t* selected = &ring->slices[slice];
 
 	if (selected->fence) {
-		while (1) { /*Fix*/
-			GLenum result = glClientWaitSync(selected->fence, GL_SYNC_FLUSH_COMMANDS_BIT, 1000000ULL);
-			if (result == GL_ALREADY_SIGNALED || result == GL_CONDITION_SATISFIED) {
-				break;
-			}
-		}
-
-		glDeleteSync(selected->fence);
-		selected->fence = 0;
+		FenceSync(selected);
 	}
 
 	writer->start = ring->mapped + selected->offset;
@@ -88,6 +100,9 @@ int GetBufferSlice(RingBuffer_t* ring, FrameWriter_t* writer){
 	ring->currentSlice = (slice + 1) % BUFFER_COUNT;
 	return 1;
 }
+
+
+
 
 
 void SendBufferSlice(RingBuffer_t* ring, uint32_t sliceIndex){
