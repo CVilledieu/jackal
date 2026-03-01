@@ -2,15 +2,20 @@
 
 #include "ring_buffer/models.h"
 
+typedef struct DrawData_t{
+    unsigned int VAO;
+    unsigned int drawLength;
+} DrawData_t;
 
 typedef struct Renderer_t{
     unsigned int shaderID;
     RingBuffer_t ringBuffer;
+    
 }Renderer_t;
 
 
-Renderer_t* CreateRenderer();
+void InitRenderer(Renderer_t* renderer);
 
-void Render(Realm_t* realm);
+void Render(Renderer_t* renderer);
 
-void DestroyRenderer(void);
+void DestroyRenderer(Renderer_t* renderer);

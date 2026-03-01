@@ -19,11 +19,12 @@ static inline void ShutDown(Jackal_t* jEngine){
 
 
 
-Jackal_t* InitJackalEngine(char* title){
+Jackal_t* CreateEngine(char* title){
     Jackal_t* jEngine = malloc(sizeof(Jackal_t));
     jEngine->mainWindow = CreateWindow(title);
 
     jEngine->realm = NewRealm();
+    InitRenderer(jEngine->renderer);
 
     return jEngine;
 }

@@ -25,8 +25,8 @@ typedef struct RingBuffer_t {
 
 int InitRingBuffer(RingBuffer_t* ring, size_t slotSize);
 
-// int GetBufferSlice(RingBuffer_t* ring, size_t writeSize, void** writePtr, size_t* writeOffset, uint32_t* outSlot);
-int GetBufferSlice(RingBuffer_t* ring, size_t writeSize, FrameWriter_t* writer);
+
+int GetBufferSlice(RingBuffer_t* ring, FrameWriter_t* writer);
     
 void SendBufferSlice(RingBuffer_t* ring, uint32_t slotIndex);
 
