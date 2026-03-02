@@ -1,4 +1,4 @@
-#include "models.h"
+#include "ssbo.h"
 
 #include <string.h>
 #include "writer.h"
@@ -93,7 +93,7 @@ int GetBufferSlice(RingBuffer_t* ring, FrameWriter_t* writer){
 		FenceSync(selected);
 	}
 
-	writer->start = ring->mapped + selected->offset;
+	writer->write = ring->mapped + selected->offset;
 	writer->offset = selected->offset;
 	writer->sliceID = slice;
 

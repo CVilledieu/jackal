@@ -1,50 +1,61 @@
 #include "render.h"
-#include "realm.h"
-#include "mesh/shaders.h"
-#include "mesh/mesh.h"
-#include "writer.h"
-#include "component_data/component_data.h"
-#include "ring_buffer/models.h"
+#include "shaders/shaders.h"
+#include "shaders/writer.h"
+#include "shaders/ssbo.h"
+#include "modeling/frame.h"
+
 #include "glad/glad.h"
 
-
-
-void InitRenderer(Renderer_t* renderer){
-    renderer->shaderID =  CreateShader();
-    InitRingBuffer(&renderer->ringBuffer);
-    
-    glUseProgram(renderer->shaderID); /*Only one shader at the moment // set and forget*/
-    return &renderer;
-}
+#define SSBO_BINDING_INDEX 0
 
 
 
 
-static inline void DrawComponent(DrawData_t* drawData){
+static inline void DrawFrame(Frame_t* frame){
     /*SetDrawIndexUniform();*/
-    glBindVertexArray(drawData->VAO);
-    glDrawElements(GL_TRIANGLES, drawData->drawLength, GL_UNSIGNED_INT, 0);
+    glBindVertexArray(frame->map.VAO);
+    glDrawElements(GL_TRIANGLES, frame->map.drawLength, GL_UNSIGNED_INT, 0);
+
+    glBindVertexArray(frame->map.VAO);
+    glDrawElements(GL_TRIANGLES, frame->map.drawLength, GL_UNSIGNED_INT, 0);
 }
 
 
 
 void Render(Renderer_t* renderer){
     FrameWriter_t writer = {0, 0, 0, NULL};
-    GetBufferSlice(&renderer->ringBuffer, &writer);
-    
-    glBindBufferRange(GL_SHADER_STORAGE_BUFFER, /*MODEL_BINDING_SLOT*/, renderer->ringBuffer.ssbo, writer.offset, writer.writeSize);
-    DrawComponent();
-    DrawComponent();
+    GetBufferSlice(&renderer->shader.ringBuffer, &writer);
 
+    FrameModels_t* modelData = (FrameModels_t*)writer->write;
+    modelData->mapData.models = GetMapModels();
+    modelData->mapData.material = GetMapMaterials();
+    modelData->entityData.models = GetEntityModels();
+    modelData->entityData.material = GetEntityMaterials();
+
+
+    glBindBufferRange(GL_SHADER_STORAGE_BUFFER, SSBO_BINDING_INDEX, renderer->shader.ringBuffer.ssbo, writer.offset, writer.writeSize);
+    
+    DrawFrame(&renderer->frameData);
     
     glBindVertexArray(0);
-    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, );
-
-    SendBufferSlice(&renderer->ringBuffer, writer.sliceID);
+    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, SSBO_BINDING_INDEX, 0);
+    SendBufferSlice(&renderer->shader.ringBuffer, writer.sliceID);
 }
 
 
 
 void DestroyRenderer(Renderer_t* renderer){
-    DestroyRingBuffer(&renderer->ringBuffer);
+    DestroyRingBuffer(&renderer->shader.ringBuffer);
+    DestroyShaderEffect(&renderer->shader);
+}
+
+
+
+void InitRenderer(Renderer_t* renderer){
+    renderer->shaderCount = 0;
+    InitShaderEffect(&renderer->shader);
+    InitModeling();
+    
+    SetShaderProgram(&renderer->shader); /*Only one shader at the moment // set and forget*/
+    return &renderer;
 }

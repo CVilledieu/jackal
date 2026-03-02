@@ -1,6 +1,5 @@
 #pragma once
 
-#include "ring_buffer/models.h"
 
 typedef struct DrawData_t{
     unsigned int VAO;
@@ -8,9 +7,9 @@ typedef struct DrawData_t{
 } DrawData_t;
 
 typedef struct Renderer_t{
-    unsigned int shaderID;
-    RingBuffer_t ringBuffer;
-    
+    unsigned int shaderCount;
+    ShaderEffect_t shader;
+    Frame_t frameData;
 }Renderer_t;
 
 

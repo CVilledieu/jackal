@@ -48,3 +48,4 @@ typedef struct Vertex_t {
 } Vertex_t;
 
 #define VERTEX_STRIDE sizeof(Vertex_t)
+
