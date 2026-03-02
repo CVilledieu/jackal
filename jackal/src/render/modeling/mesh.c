@@ -8,10 +8,7 @@ void InitMeshRegistry(MeshRegistry_t* reg){
     memset(reg, 0, sizeof(MeshRegistry_t));
 }
 
-MeshId RegisterMesh(MeshRegistry_t* reg,
-                    const Vertex_t* vertices, uint32_t vertexCount,
-                    const uint32_t* indices,  uint32_t indexCount)
-{
+MeshId RegisterMesh(MeshRegistry_t* reg, const Vertex_t* vertices, uint32_t vertexCount, const uint32_t* indices,  uint32_t indexCount){
     if (reg->count >= MAX_MESHES){
         SoftError("MeshRegistry: capacity reached");
         return MESH_INVALID;
@@ -26,32 +23,23 @@ MeshId RegisterMesh(MeshRegistry_t* reg,
 
     glBindVertexArray(m->vao);
 
-    // Upload vertex data
     glBindBuffer(GL_ARRAY_BUFFER, m->vbo);
     glBufferData(GL_ARRAY_BUFFER, vertexCount * sizeof(Vertex_t), vertices, GL_STATIC_DRAW);
 
-    // Upload index data
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m->ebo);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, indexCount * sizeof(uint32_t), indices, GL_STATIC_DRAW);
 
-    // layout(location = 0) vec3 aPos
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex_t),
-                          (void*)offsetof(Vertex_t, position));
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex_t), (void*)offsetof(Vertex_t, position));
     glEnableVertexAttribArray(0);
 
-    // layout(location = 1) vec3 aNormals
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex_t),
-                          (void*)offsetof(Vertex_t, normal));
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex_t), (void*)offsetof(Vertex_t, normal));
     glEnableVertexAttribArray(1);
 
-    // layout(location = 2) vec3 aColor
-    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex_t),
-                          (void*)offsetof(Vertex_t, color));
+    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex_t), (void*)offsetof(Vertex_t, color));
     glEnableVertexAttribArray(2);
 
-    // layout(location = 3) vec2 aTexCoord
-    glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex_t),
-                          (void*)offsetof(Vertex_t, texCoord));
+    glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex_t), (void*)offsetof(Vertex_t, texCoord));
     glEnableVertexAttribArray(3);
 
     glBindVertexArray(0);
@@ -64,10 +52,7 @@ MeshId RegisterMesh(MeshRegistry_t* reg,
     return id;
 }
 
-void BindMesh(const MeshRegistry_t* reg, MeshId id){
-    if (id >= reg->count) return;
-    glBindVertexArray(reg->meshes[id].vao);
-}
+
 
 void DestroyMeshRegistry(MeshRegistry_t* reg){
     for (MeshId i = 0; i < reg->count; i++){

@@ -10,6 +10,7 @@
 #define SHADER_DIR "assets\\shaders\\"
 
 
+
 static inline void CheckCompiled(unsigned int shader){
     int success = 0;
     char infoLog[512];
@@ -20,16 +21,17 @@ static inline void CheckCompiled(unsigned int shader){
     }
 }
 
+
+
 static inline unsigned int CompileShader(const char* fName, GLenum sType){
     uint8_t* dataBuffer;
     uint32_t fSize = GetFileData(&dataBuffer, SHADER_DIR, fName);
 
-
     unsigned int shader = glCreateShader(sType);
     const char* constBufferPtr = (const char*)dataBuffer;
     glShaderSource(shader, 1, &constBufferPtr, NULL);
+
     glCompileShader(shader);
-    
     CheckCompiled(shader);
 
     free(dataBuffer);
@@ -37,24 +39,38 @@ static inline unsigned int CompileShader(const char* fName, GLenum sType){
 }
 
 
-void InitShaderEffect(ShaderEffect_t* sEffect){
-    if(sEffect->shaderType){
-        /* Future expansion for creating additional shaders */
-    }    
+
+static inline void GetUniformLocations(ShaderEffect_t* sEffect){
+    sEffect->uniforms.view = glGetUniformLocation(sEffect->programID, VIEW_UNIFORM);
+    sEffect->uniforms.drawIndex = glGetUniformLocation(sEffect->programID, DRAW_INDEX_UNIFORM);
+}
+
+
+
+static inline void CreateShaderProgram(ShaderEffect_t* sEffect){
     unsigned int vertexShader = CompileShader("default.vert", GL_VERTEX_SHADER);
     unsigned int fragmentShader = CompileShader("default.frag", GL_FRAGMENT_SHADER);
-
-    unsigned int programID = glCreateProgram();
-    glAttachShader(programID, vertexShader);
-    glAttachShader(programID, fragmentShader);
-    glLinkProgram(programID);
-
+    
+    sEffect->programID = glCreateProgram();
+    glAttachShader(sEffect->programID, vertexShader);
+    glAttachShader(sEffect->programID, fragmentShader);
+    glLinkProgram(sEffect->programID);
+    
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);
+}
 
-    const size_t sliceSize = 1; // TEMP PLACE HOLDER VALUE
+
+
+void InitShaderEffect(ShaderEffect_t* sEffect, size_t sliceSize){  
+    sEffect->layoutBinding = 0;
+    CreateShaderProgram(sEffect);
+
+    GetUniformLocations(sEffect);
     InitRingBuffer(&sEffect->ringBuffer, sliceSize);
 }
+
+
 
 int DestroyShaderEffect(ShaderEffect_t* sEffect){
     glUseProgram(0);

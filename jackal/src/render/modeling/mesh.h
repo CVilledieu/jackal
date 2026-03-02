@@ -4,10 +4,7 @@
 
 #include <stdint.h>
 
-// ---------------------------------------------------------------------------
-// Mesh Registry – central owner of all GPU geometry (VAO/VBO/EBO)
-// All systems reference meshes by MeshId; the registry owns the GPU resources.
-// ---------------------------------------------------------------------------
+
 
 #define MAX_MESHES 64
 
@@ -25,16 +22,7 @@ typedef struct MeshRegistry_t {
     MeshId  count;
 } MeshRegistry_t;
 
-// Initialise the registry (zeroes all slots)
+
 void     InitMeshRegistry(MeshRegistry_t* reg);
-
-// Upload geometry to the GPU and return a stable MeshId
-MeshId   RegisterMesh(MeshRegistry_t* reg,
-                      const Vertex_t* vertices, uint32_t vertexCount,
-                      const uint32_t* indices,  uint32_t indexCount);
-
-// Bind a mesh's VAO for drawing
-void     BindMesh(const MeshRegistry_t* reg, MeshId id);
-
-// Free all GPU resources owned by the registry
+MeshId   RegisterMesh(MeshRegistry_t* reg, const Vertex_t* vertices, uint32_t vertexCount, const uint32_t* indices,  uint32_t indexCount);
 void     DestroyMeshRegistry(MeshRegistry_t* reg);

@@ -2,8 +2,7 @@
 #include "shaders/shaders.h"
 #include "shaders/writer.h"
 #include "shaders/ssbo.h"
-#include "modeling/frame.h"
-
+#include "modeling/mesh.h"
 #include "glad/glad.h"
 
 #define SSBO_BINDING_INDEX 0
@@ -11,13 +10,16 @@
 
 
 
-static inline void DrawFrame(Frame_t* frame){
-    /*SetDrawIndexUniform();*/
-    glBindVertexArray(frame->map.VAO);
-    glDrawElements(GL_TRIANGLES, frame->map.drawLength, GL_UNSIGNED_INT, 0);
+static inline void DrawMeshes(Mesh_t* mesh, unsigned int shaderAddress, unsigned int drawIndex){
+    glUniform1i(shaderAddress, drawIndex);
+    glBindVertexArray(mesh->vao);
+    glDrawElements(GL_TRIANGLES, mesh->indexCount, GL_UNSIGNED_INT, 0);
+}
 
-    glBindVertexArray(frame->map.VAO);
-    glDrawElements(GL_TRIANGLES, frame->map.drawLength, GL_UNSIGNED_INT, 0);
+
+
+static inline void SetFrameModels(FrameWriter_t* writer){
+    FrameModels_t* modelData = (FrameModels_t*)writer->write;
 }
 
 
@@ -26,16 +28,16 @@ void Render(Renderer_t* renderer){
     FrameWriter_t writer = {0, 0, 0, NULL};
     GetBufferSlice(&renderer->shader.ringBuffer, &writer);
 
-    FrameModels_t* modelData = (FrameModels_t*)writer->write;
-    modelData->mapData.models = GetMapModels();
-    modelData->mapData.material = GetMapMaterials();
-    modelData->entityData.models = GetEntityModels();
-    modelData->entityData.material = GetEntityMaterials();
+    FrameModels_t* modelData = (FrameModels_t*)writer.write;
 
 
     glBindBufferRange(GL_SHADER_STORAGE_BUFFER, SSBO_BINDING_INDEX, renderer->shader.ringBuffer.ssbo, writer.offset, writer.writeSize);
-    
-    DrawFrame(&renderer->frameData);
+    const unsigned int uDrawIndex = renderer->shader.uniforms.drawIndex; 
+    for (int i = 0; i < (int)renderer->meshes.count; i++){
+        Mesh_t* mesh = &renderer->meshReg.meshes[i];
+        SetShaderUniform(&renderer->shader, DRAW_INDEX_UNIFORM, i);
+        DrawMesh(&renderer->mesh)
+    }
     
     glBindVertexArray(0);
     glBindBufferBase(GL_SHADER_STORAGE_BUFFER, SSBO_BINDING_INDEX, 0);
@@ -52,8 +54,9 @@ void DestroyRenderer(Renderer_t* renderer){
 
 
 void InitRenderer(Renderer_t* renderer){
-    renderer->shaderCount = 0;
-    InitShaderEffect(&renderer->shader);
+    renderer->nMeshes  = 0;
+    const size_t sliceSize = 1024;
+    InitShaderEffect(&renderer->shader, sliceSize);
     InitModeling();
     
     SetShaderProgram(&renderer->shader); /*Only one shader at the moment // set and forget*/
