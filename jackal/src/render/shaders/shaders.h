@@ -7,13 +7,12 @@
 typedef struct UniformLocations_t {
     unsigned int view;
     unsigned int drawIndex;
-} UniformLocations_t;
+} Uniforms_t;
 
 typedef struct ShaderEffect_t{
     unsigned int programID;
     unsigned int layoutBinding;
-    UniformLocations_t uniforms;
-    RingBuffer_t ringBuffer;
+    Uniforms_t uniforms;
 }ShaderEffect_t;
 
 

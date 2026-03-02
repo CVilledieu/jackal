@@ -41,11 +41,10 @@ void Run(Jackal_t* jEngine){
     LastMinute(jEngine);
 
     while(!glfwWindowShouldClose(jEngine->mainWindow)){
-        ClearBuffer();
         glfwPollEvents();
-        
-        
-        Update();
+        UpdateGame(jEngine->realm);
+
+        PopulateFrame(jEngine->realm, jEngine->renderer);
 
         Render(jEngine->realm);
         glfwSwapBuffers(jEngine->mainWindow);

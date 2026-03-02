@@ -63,11 +63,11 @@ static inline void CreateShaderProgram(ShaderEffect_t* sEffect){
 
 
 void InitShaderEffect(ShaderEffect_t* sEffect, size_t sliceSize){  
+    (void)sliceSize;
     sEffect->layoutBinding = 0;
     CreateShaderProgram(sEffect);
 
     GetUniformLocations(sEffect);
-    InitRingBuffer(&sEffect->ringBuffer, sliceSize);
 }
 
 

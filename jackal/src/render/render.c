@@ -1,64 +1,97 @@
 #include "render.h"
+#include "frame.h"
+#include "frame/writer.h"
 #include "shaders/shaders.h"
-#include "shaders/writer.h"
 #include "shaders/ssbo.h"
 #include "modeling/mesh.h"
 #include "glad/glad.h"
-
-#define SSBO_BINDING_INDEX 0
-
+#include <string.h>
 
 
 
-static inline void DrawMeshes(Mesh_t* mesh, unsigned int shaderAddress, unsigned int drawIndex){
-    glUniform1i(shaderAddress, drawIndex);
-    glBindVertexArray(mesh->vao);
-    glDrawElements(GL_TRIANGLES, mesh->indexCount, GL_UNSIGNED_INT, 0);
+static inline void WriteFrameData(const FrameBuildResult_t* result, FrameWriter_t* writer){
+    if (!result || !writer || !writer->write || !result->payload) {
+        return;
+    }
+
+    uint8_t* writePtr = (uint8_t*)writer->write;
+    const uint8_t* srcPtr = (const uint8_t*)result->payload;
+
+    for (uint32_t i = 0; i < result->dirtySpanCount; i++) {
+        const FrameDirtySpan_t* span = &result->dirtySpans[i];
+        memcpy(writePtr + span->offset, srcPtr + span->offset, span->size);
+    }
 }
 
-
-
-static inline void SetFrameModels(FrameWriter_t* writer){
-    FrameModels_t* modelData = (FrameModels_t*)writer->write;
+static inline void DrawActiveMeshes(MeshRegistry_t* registry, ShaderEffect_t* sEffect){
+    unsigned int uDrawIndexAddress = sEffect->uniforms.drawIndex;
+    for (int i = 0; i < (registry->count); i++){
+        Mesh_t mesh = registry->meshes[i];
+        glUniform1i(uDrawIndexAddress, i);
+        glBindVertexArray(mesh.vao);
+        glDrawElements(GL_TRIANGLES, mesh.indexCount, GL_UNSIGNED_INT, 0);
+    }
 }
 
 
 
 void Render(Renderer_t* renderer){
-    FrameWriter_t writer = {0, 0, 0, NULL};
-    GetBufferSlice(&renderer->shader.ringBuffer, &writer);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    FrameModels_t* modelData = (FrameModels_t*)writer.write;
-
-
-    glBindBufferRange(GL_SHADER_STORAGE_BUFFER, SSBO_BINDING_INDEX, renderer->shader.ringBuffer.ssbo, writer.offset, writer.writeSize);
-    const unsigned int uDrawIndex = renderer->shader.uniforms.drawIndex; 
-    for (int i = 0; i < (int)renderer->meshes.count; i++){
-        Mesh_t* mesh = &renderer->meshReg.meshes[i];
-        SetShaderUniform(&renderer->shader, DRAW_INDEX_UNIFORM, i);
-        DrawMesh(&renderer->mesh)
+    FrameBuildResult_t frameResult = {0};
+    if (!BuildFrameModels(&frameResult, &renderer->modelData)) {
+        return;
     }
-    
+
+    if (!renderer->hasActiveSlice || frameResult.dirtySpanCount > 0) {
+        FrameWriter_t writer = {frameResult.requiredSize, 0, 0, NULL};
+        if (!GetBufferSlice(&renderer->ringBuffer, &writer)) {
+            return;
+        }
+
+        WriteFrameData(&frameResult, &writer);
+
+        renderer->activeOffset = writer.offset;
+        renderer->activeSize = writer.writeSize;
+        renderer->activeSlice = writer.sliceID;
+        renderer->hasActiveSlice = 1;
+
+        SendBufferSlice(&renderer->ringBuffer, writer.sliceID);
+    }
+
+    if (renderer->activeSize == 0) {
+        return;
+    }
+
+    glBindBufferRange(GL_SHADER_STORAGE_BUFFER, renderer->shader.layoutBinding, renderer->ringBuffer.ssbo, renderer->activeOffset, renderer->activeSize);
+
+
+    DrawActiveMeshes(&renderer->meshReg, &renderer->shader);
+
+
     glBindVertexArray(0);
-    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, SSBO_BINDING_INDEX, 0);
-    SendBufferSlice(&renderer->shader.ringBuffer, writer.sliceID);
+    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, renderer->shader.layoutBinding, 0);
 }
 
 
 
 void DestroyRenderer(Renderer_t* renderer){
-    DestroyRingBuffer(&renderer->shader.ringBuffer);
+    DestroyRingBuffer(&renderer->ringBuffer);
     DestroyShaderEffect(&renderer->shader);
 }
 
 
 
 void InitRenderer(Renderer_t* renderer){
-    renderer->nMeshes  = 0;
-    const size_t sliceSize = 1024;
+    const size_t sliceSize = 1024; /* TEMP VALUE*/
+    renderer->activeOffset = 0;
+    renderer->activeSize = 0;
+    renderer->activeSlice = 0;
+    renderer->hasActiveSlice = 0;
+
     InitShaderEffect(&renderer->shader, sliceSize);
+    InitRingBuffer(&renderer->ringBuffer, sliceSize);
     InitModeling();
     
     SetShaderProgram(&renderer->shader); /*Only one shader at the moment // set and forget*/
-    return &renderer;
 }

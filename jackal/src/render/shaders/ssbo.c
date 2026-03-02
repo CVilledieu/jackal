@@ -1,7 +1,7 @@
 #include "ssbo.h"
 
 #include <string.h>
-#include "writer.h"
+#include "frame/writer.h"
 
 #define BUFFER_GL_MAP_OPTIONS (GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT) 
 #define TIMEOUT_VAL 1000000ULL
