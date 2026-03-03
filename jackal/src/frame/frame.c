@@ -24,6 +24,34 @@ static inline void ZeroResult(FrameBuildResult_t* outResult){
 	outResult->payload = gFrameScratch;
 	outResult->requiredSize = 0;
 	outResult->dirtySpanCount = 0;
+	outResult->meshTrackCount = 0;
+}
+
+static inline void TrackMeshOrder(FrameBuildResult_t* outResult, const FrameModels_t* models, uint32_t modelCount){
+	if (!models->modelData) {
+		return;
+	}
+
+	for (uint32_t i = 0; i < modelCount; i++) {
+		const int meshID = models->modelData[i].meshID;
+
+		if (outResult->meshTrackCount > 0) {
+			FrameMeshTrack_t* lastTrack = &outResult->meshTracks[outResult->meshTrackCount - 1];
+			if (lastTrack->meshID == meshID) {
+				lastTrack->modelCount++;
+				continue;
+			}
+		}
+
+		if (outResult->meshTrackCount >= FRAME_MAX_MESH_TRACKS) {
+			break;
+		}
+
+		FrameMeshTrack_t* nextTrack = &outResult->meshTracks[outResult->meshTrackCount++];
+		nextTrack->meshID = meshID;
+		nextTrack->modelStart = i;
+		nextTrack->modelCount = 1;
+	}
 }
 
 int BuildFrameModels(FrameBuildResult_t* outResult, const FrameModels_t* models){
@@ -39,6 +67,7 @@ int BuildFrameModels(FrameBuildResult_t* outResult, const FrameModels_t* models)
 	}
 
 	outResult->requiredSize = (size_t)modelCount * sizeof(FrameGpuDraw_t);
+	TrackMeshOrder(outResult, models, modelCount);
 
 	if (!models->dirty || !models->modelData) {
 		return 1;

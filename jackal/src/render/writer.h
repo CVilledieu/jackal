@@ -12,10 +12,6 @@ typedef struct FrameModelData_t{
     float* model;
 } FrameModelData_t;
 
-typedef struct FrameMeshData_t{
-    int meshId;
-    int nModels;
-} FrameMeshData_t;
 
 typedef struct FrameModels_t{
     int dirty;
@@ -24,18 +20,6 @@ typedef struct FrameModels_t{
     uint32_t dirtyCount;
     FrameModelData_t* modelData;
 }FrameModels_t;
-
-typedef struct FrameMeshes_t{
-    int dirty; /*Flag for if there were changes to meshes*/
-    int totalMeshes;
-    FrameMeshData_t meshes[MAX_MESH_COUNT];
-} FrameMeshes_t;
-
-
-typedef struct FrameData_t{
-    FrameMeshes_t meshData;
-    FrameModels_t modelData;
-} FrameData_t;
 
 
 typedef struct FrameWriter_t {

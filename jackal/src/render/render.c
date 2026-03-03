@@ -23,13 +23,26 @@ static inline void WriteFrameData(const FrameBuildResult_t* result, FrameWriter_
     }
 }
 
-static inline void DrawActiveMeshes(MeshRegistry_t* registry, ShaderEffect_t* sEffect){
+static inline void DrawActiveMeshes(const FrameBuildResult_t* frame, MeshRegistry_t* registry, ShaderEffect_t* sEffect){
+    if (!frame || frame->meshTrackCount == 0) {
+        return;
+    }
+
     unsigned int uDrawIndexAddress = sEffect->uniforms.drawIndex;
-    for (int i = 0; i < (registry->count); i++){
-        Mesh_t mesh = registry->meshes[i];
-        glUniform1i(uDrawIndexAddress, i);
+    for (uint32_t i = 0; i < frame->meshTrackCount; i++) {
+        const FrameMeshTrack_t* meshTrack = &frame->meshTracks[i];
+        if (meshTrack->meshID < 0 || meshTrack->meshID >= registry->count || meshTrack->modelCount == 0) {
+            continue;
+        }
+
+        Mesh_t mesh = registry->meshes[meshTrack->meshID];
+        if (!mesh.active) {
+            continue;
+        }
+
+        glUniform1i(uDrawIndexAddress, (int)meshTrack->modelStart);
         glBindVertexArray(mesh.vao);
-        glDrawElements(GL_TRIANGLES, mesh.indexCount, GL_UNSIGNED_INT, 0);
+        glDrawElementsInstanced(GL_TRIANGLES, mesh.indexCount, GL_UNSIGNED_INT, 0, (GLsizei)meshTrack->modelCount);
     }
 }
 
@@ -64,9 +77,7 @@ void Render(Renderer_t* renderer){
     }
 
     glBindBufferRange(GL_SHADER_STORAGE_BUFFER, renderer->shader.layoutBinding, renderer->ringBuffer.ssbo, renderer->activeOffset, renderer->activeSize);
-
-
-    DrawActiveMeshes(&renderer->meshReg, &renderer->shader);
+	DrawActiveMeshes(&frameResult, &renderer->meshReg, &renderer->shader);
 
 
     glBindVertexArray(0);

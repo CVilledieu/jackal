@@ -19,10 +19,8 @@ out vec3 vColor;
 out vec2 texCoord;
 
 void main(){
-    DrawData d = draws[uDrawIndex];
-    mat4 model = d.model;
-
-    gl_Position = uView * model[gl_InstanceID] * vec4(aPos, 1.0);
+    mat4 model = draws[uDrawIndex + gl_InstanceID].model;
+    gl_Position = uView * model * vec4(aPos, 1.0);
 
     texCoord = aTexCoord;
     vColor = aColor;

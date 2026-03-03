@@ -44,7 +44,7 @@ void Run(Jackal_t* jEngine){
         glfwPollEvents();
         UpdateGame(jEngine->realm);
 
-        PopulateFrame(jEngine->realm, jEngine->renderer);
+        GenerateFrame(jEngine->realm, jEngine->renderer);
 
         Render(jEngine->realm);
         glfwSwapBuffers(jEngine->mainWindow);
